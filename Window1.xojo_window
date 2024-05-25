@@ -77,10 +77,25 @@ Begin DesktopWindow Window1
       Visible         =   True
       Width           =   80
    End
+   Begin URLConnection TwilioSocket
+      AllowCertificateValidation=   False
+      HTTPStatusCode  =   0
+      Index           =   -2147483648
+      LockedInPosition=   False
+      Scope           =   0
+      TabPanelIndex   =   0
+   End
 End
 #tag EndDesktopWindow
 
 #tag WindowCode
+	#tag Event
+		Sub Opening()
+		  LoadTwilioSettings
+		End Sub
+	#tag EndEvent
+
+
 #tag EndWindowCode
 
 #tag Events HTMLViewer1
@@ -113,6 +128,22 @@ End
 	#tag Event
 		Sub Pressed()
 		  HTMLViewer1.loadurl("https://reacher.zionadventures.com")
+		End Sub
+	#tag EndEvent
+#tag EndEvents
+#tag Events TwilioSocket
+	#tag Event
+		Function AuthenticationRequested(realm As String, ByRef name As String, ByRef password As String) As Boolean
+		  Name = TWILIOModule.AccountID // AccountSID
+		  Password = TWILIOModule.Password // AuthToken
+		  Return True
+		End Function
+	#tag EndEvent
+	#tag Event
+		Sub ContentReceived(URL As String, HTTPStatus As Integer, content As String)
+		  'Var result As String = content.DefineEncoding(Encodings.UTF8)
+		  'ResultsArea.Text = result
+		  dim i as integer = 1
 		End Sub
 	#tag EndEvent
 #tag EndEvents
