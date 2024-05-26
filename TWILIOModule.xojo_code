@@ -7,7 +7,7 @@ Protected Module TWILIOModule
 		  
 		  sqlstring = "Select * from twiliosettings where serial = '1000'"
 		  
-		  rs = mysqldb.SelectSQL(sqlstring)
+		  rs = app.mysqldb.SelectSQL(sqlstring)
 		  if rs <> nil then
 		    if not rs.AfterLastRow then
 		      TWILIOModule.AccountID = rs.column("sid").StringValue
@@ -36,13 +36,13 @@ Protected Module TWILIOModule
 		  Var textParams As String = String.FromArray(params, "&")
 		  
 		  // Assign to the Request's Content
-		  PostTestWindow.TwilioSocket.SetRequestContent(textParams, "application/x-www-form-urlencoded")
+		  Window1.TwilioSocket.SetRequestContent(textParams, "application/x-www-form-urlencoded")
 		  
 		  // Set the URL
 		  Var url As String = TWILIOModule.url_prefix + twiliomodule.accountID + "/Messages.json"
 		  
 		  // Send Request, results are in TwilioSocket.PageReceived event handler
-		  PostTestWindow.TwilioSocket.Send("POST", url)
+		  Window1.TwilioSocket.Send("POST", url)
 		End Sub
 	#tag EndMethod
 

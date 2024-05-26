@@ -1,6 +1,48 @@
 #tag Class
 Protected Class App
 Inherits DesktopApplication
+	#tag Event
+		Sub Opening()
+		  mysqldb = getdatabaseconnection
+		End Sub
+	#tag EndEvent
+
+
+	#tag Method, Flags = &h0
+		Function getdatabaseconnection() As MySQLCommunityServer
+		  dim db as new MySQLCommunityServer()
+		  
+		  
+		  '******************** This is during the testing period: populating data in the ZacTest db only *********************
+		  db.DatabaseName = "ZacReg"
+		  '******************** Change this when we go live: populating data in the ZacReg db only *********************
+		  if testing then
+		    db.Host = "192.168.0.102"
+		  else
+		    db.Host = "localhost"
+		  end if
+		  if DebugBuild then
+		    db.DatabaseName = "ZacTest"
+		  end if
+		  
+		  db.UserName = "manuser"
+		  db.Password = "u53rm4n"
+		  db.port = 3306
+		  
+		  return db
+		End Function
+	#tag EndMethod
+
+
+	#tag Property, Flags = &h0
+		mysqldb As MySQLCommunityServer
+	#tag EndProperty
+
+	#tag Property, Flags = &h21
+		Private testing As boolean
+	#tag EndProperty
+
+
 	#tag Constant, Name = kEditClear, Type = String, Dynamic = False, Default = \"&Delete", Scope = Public
 		#Tag Instance, Platform = Windows, Language = Default, Definition  = \"&Delete"
 		#Tag Instance, Platform = Linux, Language = Default, Definition  = \"&Delete"

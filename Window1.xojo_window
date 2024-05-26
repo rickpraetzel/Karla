@@ -23,7 +23,7 @@ Begin DesktopWindow Window1
    Title           =   "Reacher Status"
    Type            =   0
    Visible         =   True
-   Width           =   600
+   Width           =   406
    Begin DesktopHTMLViewer HTMLViewer1
       AutoDeactivate  =   True
       Enabled         =   True
@@ -44,7 +44,7 @@ Begin DesktopWindow Window1
       Tooltip         =   ""
       Top             =   30
       Visible         =   True
-      Width           =   600
+      Width           =   406
    End
    Begin DesktopButton Button1
       AllowAutoDeactivate=   True
@@ -59,7 +59,7 @@ Begin DesktopWindow Window1
       Height          =   20
       Index           =   -2147483648
       Italic          =   False
-      Left            =   512
+      Left            =   318
       LockBottom      =   False
       LockedInPosition=   False
       LockLeft        =   False
@@ -85,6 +85,12 @@ Begin DesktopWindow Window1
       Scope           =   0
       TabPanelIndex   =   0
    End
+   Begin URLConnection URLConnection1
+      Index           =   -2147483648
+      LockedInPosition=   False
+      Scope           =   0
+      TabPanelIndex   =   0
+   End
 End
 #tag EndDesktopWindow
 
@@ -104,30 +110,14 @@ End
 		  me.loadurl("https://reacher.zionadventures.com")
 		End Sub
 	#tag EndEvent
-	#tag Event
-		Sub Error(error As RuntimeException)
-		  'send an email to Rick
-		  
-		  SendSMS("Reacher Error: " + error.Message)
-		End Sub
-	#tag EndEvent
-	#tag Event
-		Sub DocumentBegin(url as String)
-		  dim i as integer
-		End Sub
-	#tag EndEvent
-	#tag Event
-		Sub DocumentComplete(url as String)
-		  dim n as integer
-		  
-		  myViewer.ExecuteJavaScript("executeInXojo('scrollPos', window.scrollX, window.scrollY);" )
-		End Sub
-	#tag EndEvent
 #tag EndEvents
 #tag Events Button1
 	#tag Event
 		Sub Pressed()
-		  HTMLViewer1.loadurl("https://reacher.zionadventures.com")
+		  
+		  
+		  urlconnection1.send("GET","https://reacher.zionadventures.com")
+		  
 		End Sub
 	#tag EndEvent
 #tag EndEvents
@@ -144,6 +134,19 @@ End
 		  'Var result As String = content.DefineEncoding(Encodings.UTF8)
 		  'ResultsArea.Text = result
 		  dim i as integer = 1
+		End Sub
+	#tag EndEvent
+#tag EndEvents
+#tag Events URLConnection1
+	#tag Event
+		Sub ContentReceived(URL As String, HTTPStatus As Integer, content As String)
+		  dim i as integer
+		  
+		  if HTTPStatus = 521 then
+		    SendSMS("Reacher Error: Servier is not responding.")
+		  elseif HTTPStatus = 200 then 'things are normal
+		    
+		  end if
 		End Sub
 	#tag EndEvent
 #tag EndEvents
