@@ -8,9 +8,9 @@ Begin DesktopWindow Window1
    HasBackgroundColor=   False
    HasCloseButton  =   True
    HasFullScreenButton=   False
-   HasMaximizeButton=   True
-   HasMinimizeButton=   True
-   Height          =   290
+   HasMaximizeButton=   False
+   HasMinimizeButton=   False
+   Height          =   90
    ImplicitInstance=   True
    MacProcID       =   0
    MaximumHeight   =   400
@@ -19,33 +19,11 @@ Begin DesktopWindow Window1
    MenuBarVisible  =   False
    MinimumHeight   =   64
    MinimumWidth    =   64
-   Resizeable      =   True
+   Resizeable      =   False
    Title           =   "Reacher Status"
-   Type            =   0
+   Type            =   7
    Visible         =   True
    Width           =   406
-   Begin DesktopHTMLViewer HTMLViewer1
-      AutoDeactivate  =   True
-      Enabled         =   True
-      Height          =   262
-      Index           =   -2147483648
-      InitialParent   =   ""
-      Left            =   0
-      LockBottom      =   True
-      LockedInPosition=   False
-      LockLeft        =   True
-      LockRight       =   True
-      LockTop         =   True
-      Renderer        =   0
-      Scope           =   0
-      TabIndex        =   0
-      TabPanelIndex   =   0
-      TabStop         =   True
-      Tooltip         =   ""
-      Top             =   30
-      Visible         =   True
-      Width           =   406
-   End
    Begin DesktopButton Button1
       AllowAutoDeactivate=   True
       Bold            =   False
@@ -77,7 +55,7 @@ Begin DesktopWindow Window1
       Visible         =   True
       Width           =   80
    End
-   Begin URLConnection TwilioSocket
+   Begin URLConnection URLConnection1
       AllowCertificateValidation=   False
       HTTPStatusCode  =   0
       Index           =   -2147483648
@@ -85,10 +63,96 @@ Begin DesktopWindow Window1
       Scope           =   0
       TabPanelIndex   =   0
    End
-   Begin URLConnection URLConnection1
+   Begin DesktopLabel Label1
+      AllowAutoDeactivate=   True
+      Bold            =   True
+      Enabled         =   True
+      FontName        =   "System"
+      FontSize        =   20.0
+      FontUnit        =   0
+      Height          =   30
+      Index           =   -2147483648
+      Italic          =   False
+      Left            =   87
+      LockBottom      =   False
+      LockedInPosition=   False
+      LockLeft        =   True
+      LockRight       =   False
+      LockTop         =   True
+      Multiline       =   False
+      Scope           =   0
+      Selectable      =   False
+      TabIndex        =   2
+      TabPanelIndex   =   0
+      TabStop         =   True
+      Text            =   "Last Verified Up Status:"
+      TextAlignment   =   0
+      TextColor       =   &c2A4DC600
+      Tooltip         =   ""
+      Top             =   17
+      Transparent     =   False
+      Underline       =   False
+      Visible         =   True
+      Width           =   232
+   End
+   Begin DesktopTextField TextField1
+      AllowAutoDeactivate=   True
+      AllowFocusRing  =   True
+      AllowSpellChecking=   False
+      AllowTabs       =   False
+      BackgroundColor =   &cFFFFFF
+      Bold            =   False
+      Enabled         =   True
+      FontName        =   "System"
+      FontSize        =   16.0
+      FontUnit        =   0
+      Format          =   ""
+      HasBorder       =   True
+      Height          =   26
+      Hint            =   ""
+      Index           =   -2147483648
+      Italic          =   False
+      Left            =   87
+      LockBottom      =   False
+      LockedInPosition=   False
+      LockLeft        =   True
+      LockRight       =   False
+      LockTop         =   True
+      MaximumCharactersAllowed=   0
+      Password        =   False
+      ReadOnly        =   True
+      Scope           =   0
+      TabIndex        =   3
+      TabPanelIndex   =   0
+      TabStop         =   True
+      Text            =   "Not Yet Verified..."
+      TextAlignment   =   2
+      TextColor       =   &c000000
+      Tooltip         =   ""
+      Top             =   51
+      Transparent     =   False
+      Underline       =   False
+      ValidationMask  =   ""
+      Visible         =   True
+      Width           =   232
+   End
+   Begin Timer CheckStatusTimer
+      Enabled         =   True
+      Index           =   -2147483648
+      LockedInPosition=   False
+      Period          =   300000
+      RunMode         =   2
+      Scope           =   2
+      TabPanelIndex   =   0
+   End
+   Begin SMTPSecureSocket ServerSocket1
+      CertificatePassword=   ""
       Index           =   -2147483648
       LockedInPosition=   False
       Scope           =   0
+      Secure          =   True
+      SMTPConnectionMode=   0
+      SSLConnectionType=   3
       TabPanelIndex   =   0
    End
 End
@@ -96,21 +160,23 @@ End
 
 #tag WindowCode
 	#tag Event
+		Sub Closing()
+		  quit
+		End Sub
+	#tag EndEvent
+
+	#tag Event
 		Sub Opening()
-		  LoadTwilioSettings
+		  
+		  if loadlogins then
+		    loadesettings("1")
+		  end if
 		End Sub
 	#tag EndEvent
 
 
 #tag EndWindowCode
 
-#tag Events HTMLViewer1
-	#tag Event
-		Sub Opening()
-		  me.loadurl("https://reacher.zionadventures.com")
-		End Sub
-	#tag EndEvent
-#tag EndEvents
 #tag Events Button1
 	#tag Event
 		Sub Pressed()
@@ -121,32 +187,50 @@ End
 		End Sub
 	#tag EndEvent
 #tag EndEvents
-#tag Events TwilioSocket
-	#tag Event
-		Function AuthenticationRequested(realm As String, ByRef name As String, ByRef password As String) As Boolean
-		  Name = TWILIOModule.AccountID // AccountSID
-		  Password = TWILIOModule.Password // AuthToken
-		  Return True
-		End Function
-	#tag EndEvent
-	#tag Event
-		Sub ContentReceived(URL As String, HTTPStatus As Integer, content As String)
-		  'Var result As String = content.DefineEncoding(Encodings.UTF8)
-		  'ResultsArea.Text = result
-		  dim i as integer = 1
-		End Sub
-	#tag EndEvent
-#tag EndEvents
 #tag Events URLConnection1
 	#tag Event
 		Sub ContentReceived(URL As String, HTTPStatus As Integer, content As String)
-		  dim i as integer
+		  Var d as datetime = datetime.now
 		  
 		  if HTTPStatus = 521 then
-		    SendSMS("Reacher Error: Servier is not responding.")
-		  elseif HTTPStatus = 200 then 'things are normal
+		    SendEmailToSMS("reacher Status","Reacher Error: Server is not responding.","Karla@zionadventures.com","1045")
+		    'Turn the last confirmed status to red
+		    'Kill Reacher?
+		    'If it is already killed, enable it?
 		    
+		  elseif HTTPStatus = 200 then 'things are normal
+		    TextField1.text = d.SQLDateTime
+		    SendEmailToSMS("Reacher Status","Reacher Error: Server is not responding.","Karla@zionadventures.com","1045")
 		  end if
+		End Sub
+	#tag EndEvent
+#tag EndEvents
+#tag Events CheckStatusTimer
+	#tag Event
+		Sub Action()
+		  urlconnection1.send("GET","https://reacher.zionadventures.com")
+		End Sub
+	#tag EndEvent
+#tag EndEvents
+#tag Events ServerSocket1
+	#tag Event
+		Sub ConnectionEstablished(greeting as string)
+		  TextField1.text = "Connected"
+		End Sub
+	#tag EndEvent
+	#tag Event
+		Sub MailSent()
+		  TextField1.text = "Mail is sent."
+		End Sub
+	#tag EndEvent
+	#tag Event
+		Sub ServerError(ErrorID as integer, ErrorMessage as string, Email as EmailMessage)
+		  TextField1.text = ErrorMessage
+		End Sub
+	#tag EndEvent
+	#tag Event
+		Sub Error(err As RuntimeException)
+		  TextField1.text = err.Message
 		End Sub
 	#tag EndEvent
 #tag EndEvents

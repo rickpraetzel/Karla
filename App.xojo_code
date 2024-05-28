@@ -29,7 +29,13 @@ Inherits DesktopApplication
 		  db.Password = "u53rm4n"
 		  db.port = 3306
 		  
-		  return db
+		  if db.Connect then
+		    return db
+		  else
+		    beep
+		    MessageBox "Failed to connect to the database."
+		    quit
+		  end if
 		End Function
 	#tag EndMethod
 
@@ -39,7 +45,7 @@ Inherits DesktopApplication
 	#tag EndProperty
 
 	#tag Property, Flags = &h21
-		Private testing As boolean
+		Private testing As boolean = True
 	#tag EndProperty
 
 
