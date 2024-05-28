@@ -146,7 +146,9 @@ Begin DesktopWindow Window1
       TabPanelIndex   =   0
    End
    Begin SMTPSecureSocket ServerSocket1
+      CertificateFile =   
       CertificatePassword=   ""
+      CertificateRejectionFile=   
       Index           =   -2147483648
       LockedInPosition=   False
       Scope           =   0
@@ -200,7 +202,7 @@ End
 		    
 		  elseif HTTPStatus = 200 then 'things are normal
 		    TextField1.text = d.SQLDateTime
-		    SendEmailToSMS("Reacher Status","Reacher Error: Server is not responding.","Karla@zionadventures.com","1045")
+		    'SendEmailToSMS("Reacher Status","Reacher Error: Server is not responding.","Karla@zionadventures.com","1045")
 		  end if
 		End Sub
 	#tag EndEvent
@@ -225,12 +227,12 @@ End
 	#tag EndEvent
 	#tag Event
 		Sub ServerError(ErrorID as integer, ErrorMessage as string, Email as EmailMessage)
-		  TextField1.text = ErrorMessage
+		  'TextField1.text = ErrorMessage
 		End Sub
 	#tag EndEvent
 	#tag Event
 		Sub Error(err As RuntimeException)
-		  TextField1.text = err.Message
+		  'TextField1.text = err.Message
 		End Sub
 	#tag EndEvent
 #tag EndEvents
