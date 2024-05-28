@@ -177,6 +177,145 @@ End
 	#tag EndEvent
 
 
+	#tag Method, Flags = &h0
+		Function AppnameToProcessClass(appname as string) As ProcessClass
+		  dim i as integer
+		  
+		  if ubound(webapplist) > 0 then
+		    for i = 1 to ubound(webapplist)
+		      if webapplist(i).appname = appname then
+		        currentWebApp = webapplist(i)
+		        return currentWebApp
+		      end if
+		    next
+		  end if
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Sub CheckForRunningProcesses()
+		  'checkstatus
+		  dim grepresult,s as string
+		  dim i as integer
+		  mShell = New grepShellClass
+		  mShell.ExecuteMode = shell.ExecuteModes.synchronous
+		  
+		  
+		  if ubound(Webapplist) > 0 then
+		    
+		    for i = 1 to ubound(Webapplist)
+		      if webapplist(i).active then
+		        s = "pgrep -f " + chr(34) + replaceall(webapplist(i).processName,chr(32),"\ ") + chr(34)
+		        mShell.execute(s)
+		        grepresult = mshell.result
+		        'if instr(grepresult,shellprompt) <> 0 then 'this concludes the instruction
+		        grepresult = Replace(grepresult,shellprompt,"")
+		        grepresult = trim(grepresult)
+		        if isnumeric(grepresult) then 'this is the PID and it is running
+		          webapplist(i).running = true
+		          webapplist(i).PID = val(grepresult)
+		        else 'this thing is not running
+		          webapplist(i).running = false
+		          webapplist(i).PID = 0
+		        end if
+		        'end if
+		      end if
+		    next
+		  end if
+		  
+		  
+		  'catch exceptions here
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Sub KillAppIfAppIsRunning(Appname as string,PIDtoKill as string)
+		  dim shellstring,fname,lname,position,eadd,s as string
+		  dim i as integer
+		  
+		  if ubound(webapplist) >= 0 then
+		    for i = 1 to ubound(webapplist)
+		      if webapplist(i).appname = appname then
+		        if webapplist(i).running then
+		          killshell = New Shell
+		          killshell.ExecuteMode = shell.ExecuteModes.synchronous
+		          If killshell <> Nil Then
+		            killshell.execute "kill " + PIDtoKill
+		            shellstring = killshell.result
+		            if shellstring = "" AND killshell.errorcode = 0 then 'change the status to not running
+		              webapplist(i).running = false
+		              'webapplist(i).active = false
+		              PopupMenu2.RowTagAt(popupmenu2.selectedrowindex) = ""
+		              PlaceCheckmarks
+		            end if
+		          end if
+		        end if
+		      else
+		        
+		      end if
+		    next
+		  end if
+		  
+		  
+		  
+		  
+		  
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Sub LaunchApp(appName as string)
+		  dim s,grepresult as string
+		  dim n as integer
+		  dim d as new date
+		  
+		  window1.shellstring = ""
+		  window1.grepReturnString = ""
+		  window1.AppWeAreChecking = ""
+		  
+		  launchShell = new Shell
+		  launchShell.ExecuteMode = shell.ExecuteModes.Synchronous
+		  launchShell.Execute "sh"
+		  currentWebApp = AppnameToProcessClass(appname)
+		  launchshell.execute(currentWebApp.params)
+		  DelayMBS 1
+		  s = launchshell.result
+		  if s = "" AND launchshell.errorcode = 0 then
+		    currentWebApp.running = true 'get the PID
+		    
+		    s = "pgrep " + currentWebApp.processName
+		    mShell.execute(s)
+		    grepresult = mshell.result
+		    grepresult = trim(grepresult)
+		    if isnumeric(grepresult) then 'this is the PID and it is running
+		      currentWebApp.running = true
+		      currentWebApp.PID = val(grepresult)
+		    else 'this thing is not running
+		      currentWebApp.running = false
+		      currentWebApp.PID = 0
+		    end if
+		  end if
+		  LoadPIDSintoPopup
+		  PlaceCheckmarks
+		  
+		  
+		End Sub
+	#tag EndMethod
+
+
+	#tag Property, Flags = &h0
+		KillShell As Shell
+	#tag EndProperty
+
+	#tag Property, Flags = &h0
+		launchShell As Shell
+	#tag EndProperty
+
+	#tag Property, Flags = &h0
+		mShell As grepShellClass
+	#tag EndProperty
+
+
 #tag EndWindowCode
 
 #tag Events Button1
