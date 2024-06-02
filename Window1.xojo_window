@@ -284,6 +284,10 @@ End
 		launchShell As Shell
 	#tag EndProperty
 
+	#tag Property, Flags = &h21
+		Private mRunStatus As Integer
+	#tag EndProperty
+
 	#tag Property, Flags = &h0
 		mShell As grepShellClass
 	#tag EndProperty
@@ -291,6 +295,21 @@ End
 	#tag Property, Flags = &h0
 		ReacherProcess As ProcessClass
 	#tag EndProperty
+
+	#tag ComputedProperty, Flags = &h0
+		#tag Getter
+			Get
+			  Return mRunStatus
+			End Get
+		#tag EndGetter
+		#tag Setter
+			Set
+			  mRunStatus = value
+			  'handle the text color in textfield1
+			End Set
+		#tag EndSetter
+		RunStatus As Integer
+	#tag EndComputedProperty
 
 
 #tag EndWindowCode
