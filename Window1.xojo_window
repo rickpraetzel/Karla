@@ -176,6 +176,8 @@ End
 		  
 		  ReacherProcess = new ProcessClass
 		  ReacherProcess.params = "/users/zacserver/Desktop/Reacher/Reacher --secureport=8224 --maxsecuresockets=500 --maxconnections=0"
+		  
+		  urlconnection1.send("GET","https://reacher.zionadventures.com")
 		End Sub
 	#tag EndEvent
 
@@ -306,6 +308,14 @@ End
 			Set
 			  mRunStatus = value
 			  'handle the text color in textfield1
+			  
+			  if value = 0 then
+			    TextField1.TextColor = &c02020200 'black
+			  elseif value = 1 then
+			    TextField1.TextColor = &cFF962F00 'amber
+			  elseif value = 2 then
+			    TextField1.TextColor = &cDC140D00 'red
+			  end if
 			End Set
 		#tag EndSetter
 		RunStatus As Integer
@@ -329,11 +339,17 @@ End
 		Sub ContentReceived(URL As String, HTTPStatus As Integer, content As String)
 		  Var d as datetime = datetime.now
 		  
-		  if HTTPStatus = 521 then
+		  if HTTPStatus = 521 then 'this is a server error indicating Reacher is not responding
 		    SendEmailToSMS("reacher Status","Reacher Error: Server is not responding.","Karla@zionadventures.com","1045")
-		    'Turn the last confirmed status to red
-		    'Kill Reacher?
-		    'If it is already killed, enable it?
+		    
+		    if RunStatus = 0 then 
+		      RunStatus = 1 'this is an amber light -  turn the textfield 1 text amber
+		    elseif RunStatus = 1 then
+		      RunStatus = 2 'this is an red light this needs to killed
+		      
+		    elseif RunStatus = 2 then 'restart Reacher
+		      
+		    end if
 		    
 		  elseif HTTPStatus = 200 then 'things are normal
 		    TextField1.text = d.SQLDateTime
@@ -605,6 +621,14 @@ End
 		Group="Deprecated"
 		InitialValue="False"
 		Type="Boolean"
+		EditorType=""
+	#tag EndViewProperty
+	#tag ViewProperty
+		Name="RunStatus"
+		Visible=false
+		Group="Behavior"
+		InitialValue=""
+		Type="Integer"
 		EditorType=""
 	#tag EndViewProperty
 #tag EndViewBehavior
