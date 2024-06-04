@@ -70,7 +70,7 @@ Begin DesktopWindow Window1
       FontName        =   "System"
       FontSize        =   20.0
       FontUnit        =   0
-      Height          =   30
+      Height          =   52
       Index           =   -2147483648
       Italic          =   False
       Left            =   87
@@ -79,17 +79,17 @@ Begin DesktopWindow Window1
       LockLeft        =   True
       LockRight       =   False
       LockTop         =   True
-      Multiline       =   False
+      Multiline       =   True
       Scope           =   0
       Selectable      =   False
       TabIndex        =   2
       TabPanelIndex   =   0
       TabStop         =   True
-      Text            =   "Last Verified Up Status:"
-      TextAlignment   =   0
+      Text            =   "REACHER\nLast Verified Up Status:"
+      TextAlignment   =   2
       TextColor       =   &c2A4DC600
       Tooltip         =   ""
-      Top             =   17
+      Top             =   4
       Transparent     =   False
       Underline       =   False
       Visible         =   True
@@ -129,7 +129,7 @@ Begin DesktopWindow Window1
       TextAlignment   =   2
       TextColor       =   &c000000
       Tooltip         =   ""
-      Top             =   51
+      Top             =   56
       Transparent     =   False
       Underline       =   False
       ValidationMask  =   ""
@@ -178,12 +178,17 @@ End
 		  ReacherProcess.params = "/users/zacserver/Desktop/Reacher/Reacher --secureport=8224 --maxsecuresockets=500 --maxconnections=0"
 		  
 		  urlconnection1.send("GET","https://reacher.zionadventures.com")
+		  if CheckForRunningProcesses then 'we have reacher PID
+		    
+		  else
+		    
+		  end if
 		End Sub
 	#tag EndEvent
 
 
 	#tag Method, Flags = &h0
-		Sub CheckForRunningProcesses()
+		Function CheckForRunningProcesses() As boolean
 		  'checkstatus
 		  dim grepresult,s as string
 		  dim i as integer
@@ -208,13 +213,15 @@ End
 		    reacherprocess.PID = 0
 		  end if
 		  
+		  self.Title = "Reacher Status " + "PID: " + str(ReacherProcess.PID)
+		  
 		  
 		  
 		  
 		  
 		  
 		  'catch exceptions here
-		End Sub
+		End Function
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
@@ -231,6 +238,7 @@ End
 		      shellstring = killshell.result
 		      if shellstring = "" AND killshell.errorcode = 0 then 'change the status to not running
 		        reacherprocess.running = false
+		        RunStatus = 2
 		      end if
 		    end if
 		  end if
@@ -267,6 +275,7 @@ End
 		    if isnumeric(grepresult) then 'this is the PID and it is running
 		      reacherprocess.running = true
 		      reacherprocess.PID = val(grepresult)
+		      RunStatus = 0
 		    else 'this thing is not running
 		      reacherprocess.running = false
 		      reacherprocess.PID = 0
@@ -346,9 +355,9 @@ End
 		      RunStatus = 1 'this is an amber light -  turn the textfield 1 text amber
 		    elseif RunStatus = 1 then
 		      RunStatus = 2 'this is an red light this needs to killed
-		      
+		      KillAppIfAppIsRunning("Reacher",str(ReacherProcess.PID))
 		    elseif RunStatus = 2 then 'restart Reacher
-		      
+		      LaunchApp("Reacher")
 		    end if
 		    
 		  elseif HTTPStatus = 200 then 'things are normal
